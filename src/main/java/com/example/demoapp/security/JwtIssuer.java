@@ -14,9 +14,9 @@ import java.time.temporal.ChronoUnit;
 public class JwtIssuer {
     private final JwtProperties properties;
 
-    public String issue(Integer id){
+    public String issue(String username){
         return JWT.create()
-                .withSubject(id.toString())
+                .withSubject(username)
                 .withExpiresAt(Instant.now().plus(Duration.of(1, ChronoUnit.DAYS)))
                 .sign(Algorithm.HMAC256(properties.getSecretKey()));
 

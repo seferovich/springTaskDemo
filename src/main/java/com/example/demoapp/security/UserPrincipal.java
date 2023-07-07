@@ -1,9 +1,6 @@
 package com.example.demoapp.security;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,10 +10,12 @@ import java.util.Collection;
 @Builder
 @Setter
 @AllArgsConstructor
+@NoArgsConstructor
 public class UserPrincipal implements UserDetails {
 
     private Integer id;
     private String username;
+    private String password;
     private Collection<? extends GrantedAuthority> authorities;
 
 
@@ -27,12 +26,12 @@ public class UserPrincipal implements UserDetails {
 
     @Override
     public String getPassword() {
-        return null;
+        return password;
     }
 
     @Override
     public String getUsername() {
-        return null;
+        return username;
     }
 
     @Override

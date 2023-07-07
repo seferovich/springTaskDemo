@@ -6,6 +6,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class JwtToPrincipalConverter {
     public UserPrincipal convert(DecodedJWT jwt){
-        return UserPrincipal.builder().id(Integer.valueOf(jwt.getSubject())).build();
+        return UserPrincipal.builder().username(jwt.getSubject()).build();
     }
 }

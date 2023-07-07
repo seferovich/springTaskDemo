@@ -1,6 +1,7 @@
 package com.example.demoapp.security;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -31,9 +32,8 @@ public class WebSecurityConfig {
                         -> sessionManagementConfigurer.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .formLogin(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(registry -> registry
-                        .requestMatchers("/").permitAll()
-                        .requestMatchers("/auth/getUser").permitAll()
-                        .requestMatchers("/auth/register").permitAll()
+                        .requestMatchers("/register").permitAll()
+                                 .requestMatchers("/login").permitAll()
 
                         .anyRequest().authenticated()
                 );

@@ -4,9 +4,9 @@ security:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5332/jwt_security
+    url: jdbc:postgresql://localhost:5332/
     username: isa
-    password: 1234
+    password: 123456
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
