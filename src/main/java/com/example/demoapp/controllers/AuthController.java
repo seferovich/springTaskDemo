@@ -35,16 +35,8 @@ public class AuthController {
 
     @PostMapping("/register")
     public RegisterResponse registerUser(@RequestBody RegisterRequest req){
-        var token = jwtIssuer.issue(req.getUsername());
-        User savedUser = new User();
-        savedUser.setEmail(req.getEmail());
-        savedUser.setPassword(passwordEncoder.encode(req.getPassword()));
-        savedUser.setUsername(req.getUsername());
 
-        userRepository.save(savedUser);
-
-        authService.attemptLogin(req.getUsername(), req.getPassword());
-        return RegisterResponse.builder().accessToken(token).user(savedUser).message("User created!").build();
+        return authService.attemptRegister(req.getUsername(), req.getPassword(), req.getEmail());
     }
 
     @PostMapping("/login")
