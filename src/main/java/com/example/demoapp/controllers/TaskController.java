@@ -4,22 +4,16 @@ import com.example.demoapp.models.Task;
 import com.example.demoapp.models.User;
 import com.example.demoapp.repository.TaskRepository;
 import com.example.demoapp.repository.UserRepository;
-import com.example.demoapp.respones.LoginResponse;
-import com.example.demoapp.respones.RegisterResponse;
-import com.example.demoapp.respones.TaskCreateRequest;
-import com.example.demoapp.respones.TaskCreateResponse;
+import com.example.demoapp.respones.TaskRequest;
+import com.example.demoapp.respones.TaskResponse;
 import com.example.demoapp.security.UserPrincipal;
 import lombok.AllArgsConstructor;
-import lombok.extern.java.Log;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/task")
@@ -29,7 +23,7 @@ public class TaskController {
     private final UserRepository userRepository;
 
     @PostMapping("/create")
-    public ResponseEntity<Task> createTask(@RequestBody TaskCreateRequest req, @AuthenticationPrincipal UserPrincipal principal){
+    public ResponseEntity<Task> createTask(@RequestBody TaskRequest req, @AuthenticationPrincipal UserPrincipal principal){
         Task task = new Task();
         var user = userRepository.findByUsername(principal.getUsername()).orElseThrow();
         task.setName(req.getName());
@@ -43,8 +37,55 @@ public class TaskController {
     @GetMapping("/getAll")
     public List<Task> getAll(@AuthenticationPrincipal UserPrincipal principal){
 
-
         return taskRepository.findByUserUsername(principal.getUsername());
+    }
+
+    @GetMapping("/getById/{id}")
+    public TaskResponse getById(@PathVariable("id") Integer id, @AuthenticationPrincipal UserPrincipal principal){
+        Task task = taskRepository.findById(id).orElseThrow();
+        User taskUser = task.getUser();
+        String username = taskUser.getUsername();
+
+        // If the task belongs to the user, return it
+        if(username.equals(principal.getUsername())){
+            return TaskResponse.builder().task(task).message("Task found!").build();
+        }
+        return TaskResponse.builder().message("Could not find the task!").build();
+
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public TaskResponse deleteTask(@PathVariable("id") Integer id, @AuthenticationPrincipal UserPrincipal principal){
+        Task task = taskRepository.findById(id).orElseThrow();
+        User taskUser = task.getUser();
+        String username = taskUser.getUsername();
+
+        // If the task belongs to the user, delete and return it
+        if(username.equals(principal.getUsername())){
+            taskRepository.deleteById(id);
+            return TaskResponse.builder().task(task).message("Task deleted!").build();
+        }
+
+        return TaskResponse.builder().message("Could not find and delete!").build();
+    }
+
+
+    @PatchMapping("/update/{id}")
+    public TaskResponse updateTask(@PathVariable("id") Integer id, @RequestBody TaskRequest req, @AuthenticationPrincipal UserPrincipal principal){
+        Task task = taskRepository.findById(id).orElseThrow();
+        User taskUser = task.getUser();
+        String username = taskUser.getUsername();
+
+        // If the task belongs to the user, delete and return it
+        if(username.equals(principal.getUsername())){
+            task.setName(req.getName());
+            task.setDescription(req.getDescription());
+            task.setFinished(req.getFinished());
+            taskRepository.save(task);
+            return TaskResponse.builder().task(task).message("Task updated!").build();
+        }
+
+        return TaskResponse.builder().message("Could not find and update!").build();
     }
 
 }

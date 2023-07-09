@@ -5,8 +5,9 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class TaskCreateRequest {
+public class TaskRequest {
     private final String name;
     private final String description;
+    private final Boolean finished;
 
 }

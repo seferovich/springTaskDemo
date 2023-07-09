@@ -6,6 +6,7 @@ import lombok.Getter;
 
 @Getter
 @Builder
-public class TaskCreateResponse {
+public class TaskResponse {
     private final Task task;
+    private final String message;
 }

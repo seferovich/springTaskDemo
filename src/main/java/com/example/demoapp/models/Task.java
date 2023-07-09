@@ -30,6 +30,9 @@ import lombok.*;
         @Column(nullable = false)
         private String description;
 
+        @Column(nullable = false)
+        private Boolean finished;
+
         @ManyToOne
         @JsonIgnore
         @JoinColumn(name = "user_id", nullable = false)
