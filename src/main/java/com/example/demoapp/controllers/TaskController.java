@@ -28,6 +28,7 @@ public class TaskController {
         var user = userRepository.findByUsername(principal.getUsername()).orElseThrow();
         task.setName(req.getName());
         task.setDescription(req.getDescription());
+        task.setFinished(req.getFinished());
         task.setUser(user);
 
         taskRepository.save(task);
@@ -41,21 +42,23 @@ public class TaskController {
     }
 
     @GetMapping("/getById/{id}")
-    public TaskResponse getById(@PathVariable("id") Integer id, @AuthenticationPrincipal UserPrincipal principal){
+    public ResponseEntity<TaskResponse> getById(@PathVariable("id") Integer id, @AuthenticationPrincipal UserPrincipal principal){
         Task task = taskRepository.findById(id).orElseThrow();
         User taskUser = task.getUser();
         String username = taskUser.getUsername();
 
         // If the task belongs to the user, return it
         if(username.equals(principal.getUsername())){
-            return TaskResponse.builder().task(task).message("Task found!").build();
+            TaskResponse response = TaskResponse.builder().task(task).message("Task found.").build();
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
-        return TaskResponse.builder().message("Could not find the task!").build();
+        TaskResponse response = TaskResponse.builder().message("Could not find the task.").build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
 
     }
 
     @DeleteMapping("/delete/{id}")
-    public TaskResponse deleteTask(@PathVariable("id") Integer id, @AuthenticationPrincipal UserPrincipal principal){
+    public ResponseEntity<TaskResponse> deleteTask(@PathVariable("id") Integer id, @AuthenticationPrincipal UserPrincipal principal){
         Task task = taskRepository.findById(id).orElseThrow();
         User taskUser = task.getUser();
         String username = taskUser.getUsername();
@@ -63,15 +66,17 @@ public class TaskController {
         // If the task belongs to the user, delete and return it
         if(username.equals(principal.getUsername())){
             taskRepository.deleteById(id);
-            return TaskResponse.builder().task(task).message("Task deleted!").build();
+            TaskResponse response = TaskResponse.builder().task(task).message("Task deleted.").build();
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
 
-        return TaskResponse.builder().message("Could not find and delete!").build();
+        TaskResponse response = TaskResponse.builder().message("Could not find and delete.").build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
 
     @PatchMapping("/update/{id}")
-    public TaskResponse updateTask(@PathVariable("id") Integer id, @RequestBody TaskRequest req, @AuthenticationPrincipal UserPrincipal principal){
+    public ResponseEntity<TaskResponse> updateTask(@PathVariable("id") Integer id, @RequestBody TaskRequest req, @AuthenticationPrincipal UserPrincipal principal){
         Task task = taskRepository.findById(id).orElseThrow();
         User taskUser = task.getUser();
         String username = taskUser.getUsername();
@@ -82,10 +87,12 @@ public class TaskController {
             task.setDescription(req.getDescription());
             task.setFinished(req.getFinished());
             taskRepository.save(task);
-            return TaskResponse.builder().task(task).message("Task updated!").build();
+            TaskResponse response = TaskResponse.builder().task(task).message("Task updated.").build();
+            return ResponseEntity.status(HttpStatus.OK).body(response);
         }
 
-        return TaskResponse.builder().message("Could not find and update!").build();
+        TaskResponse response = TaskResponse.builder().message("Could not find and update!").build();
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(response);
     }
 
 }

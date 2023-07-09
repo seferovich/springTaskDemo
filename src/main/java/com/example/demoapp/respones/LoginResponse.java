@@ -11,5 +11,4 @@ import java.util.List;
 public class LoginResponse {
     private final String accessToken;
     private final String message;
-    private final List<Task> tasks;
 }

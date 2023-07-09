@@ -8,7 +8,6 @@ import lombok.Getter;
 @Getter
 @Builder
 public class RegisterResponse {
-    private final String accessToken;
     private final String message;
     private final User user;
 }
